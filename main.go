@@ -18,7 +18,9 @@ func main() {
 	}
 
 	internal.GetChapterPages(chapters)
-	internal.CreatePdf(*chapters[0])
+	for _, chapter := range chapters {
+		internal.CreatePdf(*chapter)
+	}
 
 	log.Print("Finished!")
 }
