@@ -20,10 +20,11 @@ func CreatePdf(chapter Chapter) {
 			return
 		}
 		pdf.AddPage()
-		pdf.Image(file.Name(), 0, 0, 0, 0, false, "", 0, "")
+		pageW, pageH := pdf.GetPageSize()
+		pdf.Image(file.Name(), 0, 0, pageW, pageH, false, "", 0, "")
 	}
 
-	err := pdf.OutputFileAndClose("./test.pdf")
+	err := pdf.OutputFileAndClose("./" + chapter.Chapter + ".pdf")
 	if err != nil {
 		log.Fatal(err)
 		return

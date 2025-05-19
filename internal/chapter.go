@@ -38,7 +38,7 @@ func extractChapterPagesInfo(link string) []*Page {
 	err := chromedp.Run(ctx,
 		// Navigate to the local HTML file
 		chromedp.Navigate(link),
-		chromedp.Sleep(2*time.Second),
+		chromedp.Sleep(50*time.Millisecond),
 		chromedp.Evaluate(`
 			Array.from(document.querySelectorAll('div[id^="page"]'))
 				.filter(div => /^page\d+$/.test(div.id))

@@ -8,8 +8,8 @@ import (
 
 func main() {
 	c := &internal.Config{
-		//Manga: "https://mangakatana.com/manga/monster.8819",
-		Manga: "https://mangakatana.com/manga/akogare-no-onee-san.18122",
+		Manga: "https://mangakatana.com/manga/monster.8819",
+		//Manga: "https://mangakatana.com/manga/akogare-no-onee-san.18122",
 	}
 	chapters := internal.ExtractChapters(c)
 	if chapters == nil {
