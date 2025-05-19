@@ -15,8 +15,8 @@ type Page struct {
 	ImgUrl    string
 }
 
-func GetChapterPages(chapters *[]*Chapter) {
-	for _, chapter := range *chapters {
+func GetChapterPages(chapters []*Chapter) {
+	for _, chapter := range chapters {
 		data := extractChapterPagesInfo(chapter.Link)
 		chapter.Pages = &data
 	}

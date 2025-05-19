@@ -11,7 +11,7 @@ type Chapter struct {
 	Pages   *[]*Page
 }
 
-func ExtractChapters(c *Config) *[]*Chapter {
+func ExtractChapters(c *Config) []*Chapter {
 	node := download(c.Manga)
 	if node == nil {
 		log.Println("No chapters found")
@@ -24,7 +24,7 @@ func ExtractChapters(c *Config) *[]*Chapter {
 		return nil
 	}
 
-	return &chapters
+	return chapters
 }
 
 func extractChapters(chapters *html.Node) []*Chapter {
@@ -66,7 +66,11 @@ func extractChapters(chapters *html.Node) []*Chapter {
 			continue
 		}
 
-		chapter := &Chapter{}
+		pages := make([]*Page, 0)
+		chapter := &Chapter{
+			Pages: &pages,
+		}
+
 		atrributes := aTag.Attr
 		for _, attr := range atrributes {
 			if attr.Key == "href" {
