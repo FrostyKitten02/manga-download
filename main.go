@@ -6,9 +6,7 @@ import (
 	"manga-download/internal"
 )
 
-//TIP <p>To run your code, right-click the code and select <b>Run</b>.</p> <p>Alternatively, click
-// the <icon src="AllIcons.Actions.Execute"/> icon in the gutter and select the <b>Run</b> menu item from here.</p>
-
+// TODO findout why we get wierd data in structs, but data is ok when its processing and in processing results, results also seem fine but chapters fomr extract chapters get messed up why??
 func main() {
 	c := &internal.Config{
 		Manga: "https://mangakatana.com/manga/monster.8819",
@@ -18,7 +16,8 @@ func main() {
 		fmt.Println("No chapters found")
 		return
 	}
-	internal.GetChapterPages(chapters)
+	subarr := (*(chapters))[0:2]
+	internal.GetChapterPages(&subarr)
 
-	log.Print("FInished!")
+	log.Print("Finished!")
 }
