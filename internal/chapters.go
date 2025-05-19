@@ -8,7 +8,7 @@ import (
 type Chapter struct {
 	Link    string
 	Chapter string
-	Pages   *[]*Page
+	Pages   []*Page
 }
 
 func ExtractChapters(c *Config) []*Chapter {
@@ -68,7 +68,7 @@ func extractChapters(chapters *html.Node) []*Chapter {
 
 		pages := make([]*Page, 0)
 		chapter := &Chapter{
-			Pages: &pages,
+			Pages: pages,
 		}
 
 		atrributes := aTag.Attr

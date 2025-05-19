@@ -18,7 +18,7 @@ type Page struct {
 func GetChapterPages(chapters []*Chapter) {
 	for _, chapter := range chapters {
 		data := extractChapterPagesInfo(chapter.Link)
-		chapter.Pages = &data
+		chapter.Pages = data
 	}
 }
 

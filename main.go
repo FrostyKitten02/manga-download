@@ -18,6 +18,7 @@ func main() {
 	}
 
 	internal.GetChapterPages(chapters)
+	internal.CreatePdf(*chapters[0])
 
 	log.Print("Finished!")
 }
