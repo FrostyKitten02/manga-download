@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"manga-download/internal"
 )
 
@@ -17,6 +18,7 @@ func main() {
 		fmt.Println("No chapters found")
 		return
 	}
+	internal.GetChapterPages(chapters)
 
-	internal.DownloadChapterImgs(chapters[0])
+	log.Print("FInished!")
 }

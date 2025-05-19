@@ -8,9 +8,10 @@ import (
 type Chapter struct {
 	Link    string
 	Chapter string
+	Pages   *[]*Page
 }
 
-func ExtractChapters(c *Config) []*Chapter {
+func ExtractChapters(c *Config) *[]*Chapter {
 	node := download(c.Manga)
 	if node == nil {
 		log.Println("No chapters found")
@@ -23,7 +24,7 @@ func ExtractChapters(c *Config) []*Chapter {
 		return nil
 	}
 
-	return chapters
+	return &chapters
 }
 
 func extractChapters(chapters *html.Node) []*Chapter {
