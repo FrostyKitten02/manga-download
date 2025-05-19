@@ -1,9 +1,11 @@
 package internal
 
 import (
+	"fmt"
 	"github.com/jung-kurt/gofpdf"
 	"image"
-	"io"
+	"image/jpeg"
+	"image/png"
 	"log"
 	"net/http"
 	"os"
@@ -36,7 +38,7 @@ func downloadImg(url string) (*os.File, error) {
 		return nil, err
 	}
 
-	_, format, imgErr := image.Decode(res.Body)
+	img, format, imgErr := image.Decode(res.Body)
 	if imgErr != nil {
 		return nil, imgErr
 	}
@@ -46,9 +48,15 @@ func downloadImg(url string) (*os.File, error) {
 		return nil, fileErr
 	}
 	defer imgFile.Close()
-	_, writeErr := io.Copy(imgFile, res.Body)
-	if writeErr != nil {
-		return nil, writeErr
+
+	switch format {
+	case "png":
+		err = png.Encode(imgFile, img)
+	case "jpeg", "jpg":
+		err = jpeg.Encode(imgFile, img, &jpeg.Options{Quality: 100})
+	default:
+		imgFile.Close()
+		return nil, fmt.Errorf("unsupported image format: %s", format)
 	}
 
 	return imgFile, nil
