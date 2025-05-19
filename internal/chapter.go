@@ -1,10 +1,10 @@
 package internal
 
 import (
-	"golang.org/x/net/html"
+	"context"
+	"github.com/chromedp/chromedp"
 	"log"
-	"strconv"
-	"strings"
+	"time"
 )
 
 type Page struct {
@@ -13,70 +13,31 @@ type Page struct {
 	ImgUrl    string
 }
 
-func DownloadChapterImgs(c *Chapter) *string {
-	doc := download(c.Link)
-	if doc == nil {
-		return nil
-	}
+// TODO use the same headless driver for all pages
+func extractChapterPagesInfo(link string) {
+	opts := append(chromedp.DefaultExecAllocatorOptions[:],
+		chromedp.Flag("headless", true), // Set to true for production
+		chromedp.UserAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"),
+	)
+	allocCtx, cancel := chromedp.NewExecAllocator(context.Background(), opts...)
+	defer cancel()
+	ctx, cancel := chromedp.NewContext(allocCtx)
+	defer cancel()
 
-	imgs := findImgContainer(doc)
-	if imgs == nil {
-		log.Println("Failed to find chapter images container")
-		return nil
-	}
-
-	pages := getChapterPages(imgs)
-	if pages == nil {
-		return nil
-	}
-
-	return nil
-}
-
-func getChapterPages(imgWrapper *html.Node) []*Page {
-	children := imgWrapper.ChildNodes()
-
-	pages := make([]*Page, 0)
-	for child := range children {
-		//TODO better break out of this loop?
-		skip := true
-		for _, attr := range child.Attr {
-			if attr.Key == "class" {
-				skip = strings.Contains(attr.Val, "wrap_img uk-width-1-1")
-				break
-			}
-		}
-
-		if skip {
-			continue
-		}
-
-		page := Page{}
-		extractPageNumber(child, &page)
-		extractImgUrl(child, &page)
-		pages = append(pages, &page)
-	}
-
-	return pages
-}
-
-func extractImgUrl(parent *html.Node, page *Page) {
-	node := parent.FirstChild
-	attrs := node.Attr
-	for _, attr := range attrs {
-		if attr.Key == "data-src" {
-			page.ImgUrl = attr.Val
-		}
-	}
-}
-
-func extractPageNumber(node *html.Node, page *Page) {
-	attrs := node.Attr
-	for _, attr := range attrs {
-		if attr.Key == "id" {
-			page.NumberStr = attr.Val
-			numStr := strings.ReplaceAll(attr.Val, "page", "")
-			page.Number, _ = strconv.ParseInt(numStr, 10, 64)
-		}
+	// Run tasks in Chrome
+	var results []map[string]interface{}
+	err := chromedp.Run(ctx,
+		// Navigate to the local HTML file
+		chromedp.Navigate(link),
+		chromedp.Sleep(2*time.Second),
+		chromedp.Evaluate(`
+			Array.from(document.querySelectorAll('div[id^="page"]')).map(div => ({
+				id: div.id,
+				dataSrc: div.querySelector('img[data-src]')?.getAttribute('data-src') || null
+			}))
+		`, &results),
+	)
+	if err != nil {
+		log.Fatalf("Error running Chromedp: %v", err)
 	}
 }
